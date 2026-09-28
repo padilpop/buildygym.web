@@ -1,8 +1,11 @@
-# Local Documentation and Tasks (Rules.md Section 15)
+# AI Agent Rules & Local Workspace Instructions
+.agents/
+anti-slop/
+AGENTS.md
+DEPLOYMENT.md
+Vibe Engineering Instruction/
 docs/
 tasks/
-Vibe Engineering Instruction/docs/
-Vibe Engineering Instruction/tasks/
 
 # Environment and Secrets
 .env
@@ -14,6 +17,9 @@ Vibe Engineering Instruction/tasks/
 # Dependencies
 node_modules/
 vendor/
+backend/backend/
+*.sqlite
+*.sqlite3
 
 # Build and Dist
 frontend/dist/
