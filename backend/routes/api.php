@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Admin\PersonalTrainerController;
 use App\Http\Controllers\Api\Admin\TestimonialController;
 use App\Http\Controllers\Api\Admin\WebsiteSettingController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PublicController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,6 +28,19 @@ Route::get('/health', function () {
         'environment' => config('app.env'),
         'timestamp' => now()->toIso8601String(),
     ]);
+});
+
+// Public Landing Page API Routes (Dynamic CMS Data)
+Route::prefix('public')->group(function () {
+    Route::get('/landing-data', [PublicController::class, 'landingData']);
+    Route::get('/settings', [PublicController::class, 'settings']);
+    Route::get('/memberships', [PublicController::class, 'memberships']);
+    Route::get('/personal-trainers', [PublicController::class, 'trainers']);
+    Route::get('/branches', [PublicController::class, 'branches']);
+    Route::get('/facilities', [PublicController::class, 'facilities']);
+    Route::get('/testimonials', [PublicController::class, 'testimonials']);
+    Route::get('/gallery', [PublicController::class, 'gallery']);
+    Route::get('/faqs', [PublicController::class, 'faqs']);
 });
 
 // Admin Authentication Routes

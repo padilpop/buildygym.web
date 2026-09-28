@@ -58,6 +58,18 @@ export const authApi = {
   me: () => apiRequest('/auth/me', { method: 'GET' }),
 };
 
+export const publicApi = {
+  getLandingData: () => apiRequest('/public/landing-data'),
+  getSettings: () => apiRequest('/public/settings'),
+  getMemberships: () => apiRequest('/public/memberships'),
+  getTrainers: () => apiRequest('/public/personal-trainers'),
+  getBranches: () => apiRequest('/public/branches'),
+  getFacilities: () => apiRequest('/public/facilities'),
+  getTestimonials: () => apiRequest('/public/testimonials'),
+  getGallery: () => apiRequest('/public/gallery'),
+  getFaqs: () => apiRequest('/public/faqs'),
+};
+
 export const adminApi = {
   // Stats
   getStats: () => apiRequest('/admin/stats'),

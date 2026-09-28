@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import { publicApi } from '../../services/api';
+
+// Public Components
 import Navbar from '../../components/public/Navbar';
 import Hero from '../../components/public/Hero';
 import About from '../../components/public/About';
@@ -13,21 +16,34 @@ import Cta from '../../components/public/Cta';
 import Footer from '../../components/public/Footer';
 
 export default function LandingPage() {
-  const [settings, setSettings] = useState(null);
+  const [gymData, setGymData] = useState({
+    settings: null,
+    memberships: [],
+    trainers: [],
+    branches: [],
+    facilities: [],
+    testimonials: [],
+    gallery: [],
+    faqs: [],
+  });
+  const [loading, setLoading] = useState(true);
 
-  // Optional background fetch for live website settings if available
   useEffect(() => {
-    async function loadSettings() {
+    async function loadLandingData() {
       try {
-        const res = await fetch('http://localhost:8000/api/v1/health');
-        if (res.ok) {
-          // backend is reachable
+        setLoading(true);
+        const res = await publicApi.getLandingData();
+        if (res?.data) {
+          setGymData(res.data);
         }
-      } catch (e) {
-        // Fallback to default styling and copy without error
+      } catch (err) {
+        // Fallback safely to default datasets inside each component if API is unreachable
+        console.warn('Backend API offline or unreachable, using verified default gym dataset:', err.message);
+      } finally {
+        setLoading(false);
       }
     }
-    loadSettings();
+    loadLandingData();
   }, []);
 
   return (
@@ -37,38 +53,38 @@ export default function LandingPage() {
 
       <main>
         {/* 2. Hero Section */}
-        <Hero settings={settings} />
+        <Hero settings={gymData.settings} />
 
         {/* 3. About Section */}
         <About />
 
         {/* 4. Facilities Section */}
-        <Facilities />
+        <Facilities facilities={gymData.facilities} />
 
         {/* 5. Membership Section */}
-        <Membership settings={settings} />
+        <Membership memberships={gymData.memberships} settings={gymData.settings} />
 
         {/* 6. Personal Trainer Section */}
-        <Trainers settings={settings} />
+        <Trainers trainers={gymData.trainers} settings={gymData.settings} />
 
         {/* 7. Branches Section */}
-        <Branches settings={settings} />
+        <Branches branches={gymData.branches} settings={gymData.settings} />
 
         {/* 8. Testimonials Section */}
-        <Testimonials />
+        <Testimonials testimonials={gymData.testimonials} />
 
         {/* 9. Gallery Section */}
-        <Gallery />
+        <Gallery gallery={gymData.gallery} />
 
         {/* 10. FAQ Section */}
-        <Faq />
+        <Faq faqs={gymData.faqs} />
 
         {/* 11. CTA Banner */}
-        <Cta settings={settings} />
+        <Cta settings={gymData.settings} />
       </main>
 
       {/* 12. Footer */}
-      <Footer settings={settings} />
+      <Footer settings={gymData.settings} />
     </div>
   );
 }
