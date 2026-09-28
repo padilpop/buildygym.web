@@ -16,14 +16,29 @@ class MediaUploadController extends Controller
     public function upload(Request $request): JsonResponse
     {
         $request->validate([
-            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'image' => ['required', 'file', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'folder' => ['nullable', 'string', 'in:trainers,facilities,branches,gallery,testimonials,branding'],
         ]);
 
-        $folder = $request->input('folder', 'general');
         $file = $request->file('image');
-        
-        $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+
+        if (!$file || !$file->isValid()) {
+            return response()->json([
+                'message' => 'Berkas gambar tidak valid atau rusak.',
+            ], 422);
+        }
+
+        $allowedExtensions = ['jpeg', 'jpg', 'png', 'webp'];
+        $extension = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
+
+        if (!in_array($extension, $allowedExtensions, true)) {
+            return response()->json([
+                'message' => 'Format berkas hanya boleh berupa JPG, PNG, atau WebP.',
+            ], 422);
+        }
+
+        $folder = $request->input('folder', 'general');
+        $filename = Str::uuid() . '.' . $extension;
         $path = $file->storeAs("uploads/{$folder}", $filename, 'public');
 
         $url = asset('storage/' . $path);

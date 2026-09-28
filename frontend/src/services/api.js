@@ -33,7 +33,7 @@ export async function apiRequest(endpoint, options = {}) {
       localStorage.removeItem('buildygym_token');
       localStorage.removeItem('buildygym_user');
       if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin/login') {
-        window.location.href = '/admin/login';
+        window.location.href = '/admin/login?expired=1';
       }
     }
 

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './layouts/AdminLayout';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Public Landing Page
 import LandingPage from './pages/public/LandingPage';
@@ -20,37 +21,39 @@ import Settings from './pages/admin/Settings';
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public Landing Page */}
-          <Route path="/" element={<LandingPage />} />
+    <ErrorBoundary>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public Landing Page */}
+            <Route path="/" element={<LandingPage />} />
 
-          {/* Admin Authentication */}
-          <Route path="/admin/login" element={<Login />} />
+            {/* Admin Authentication */}
+            <Route path="/admin/login" element={<Login />} />
 
-          {/* Protected Admin CMS Dashboard & CRUD Modules */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Dashboard />} />
-            <Route path="memberships" element={<Memberships />} />
-            <Route path="trainers" element={<Trainers />} />
-            <Route path="branches" element={<Branches />} />
-            <Route path="facilities" element={<Facilities />} />
-            <Route path="testimonials" element={<Testimonials />} />
-            <Route path="gallery" element={<Gallery />} />
-            <Route path="faqs" element={<Faqs />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            {/* Protected Admin CMS Dashboard & CRUD Modules */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Dashboard />} />
+              <Route path="memberships" element={<Memberships />} />
+              <Route path="trainers" element={<Trainers />} />
+              <Route path="branches" element={<Branches />} />
+              <Route path="facilities" element={<Facilities />} />
+              <Route path="testimonials" element={<Testimonials />} />
+              <Route path="gallery" element={<Gallery />} />
+              <Route path="faqs" element={<Faqs />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

@@ -31,7 +31,7 @@ Route::get('/health', function () {
 });
 
 // Public Landing Page API Routes (Dynamic CMS Data)
-Route::prefix('public')->group(function () {
+Route::prefix('public')->middleware('throttle:public-api')->group(function () {
     Route::get('/landing-data', [PublicController::class, 'landingData']);
     Route::get('/settings', [PublicController::class, 'settings']);
     Route::get('/memberships', [PublicController::class, 'memberships']);
@@ -45,7 +45,7 @@ Route::prefix('public')->group(function () {
 
 // Admin Authentication Routes
 Route::prefix('auth')->group(function () {
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 
     // Protected Auth Routes
     Route::middleware('auth:sanctum')->group(function () {

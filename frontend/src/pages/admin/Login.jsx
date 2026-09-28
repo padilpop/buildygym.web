@@ -33,6 +33,9 @@ export default function Login() {
     }
   };
 
+  const searchParams = new URLSearchParams(location.search);
+  const isSessionExpired = searchParams.get('expired') === '1';
+
   return (
     <div
       style={{
@@ -81,6 +84,31 @@ export default function Login() {
             Masuk untuk mengelola membership, trainer, fasilitas, dan cabang gym.
           </p>
         </div>
+
+        {isSessionExpired && !error && (
+          <div
+            style={{
+              backgroundColor: 'rgba(255, 184, 0, 0.12)',
+              border: '1px solid #ffb800',
+              color: '#ffd15c',
+              padding: 'var(--space-sm) var(--space-md)',
+              borderRadius: 'var(--radius-sm)',
+              fontSize: '0.875rem',
+              marginBottom: 'var(--space-lg)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+            role="status"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span>Sesi login Anda telah berakhir. Silakan masuk kembali.</span>
+          </div>
+        )}
 
         {error && (
           <div
