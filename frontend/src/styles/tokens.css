@@ -1,0 +1,70 @@
+/* BUILDY GYM — Design System Tokens (DESIGN.md & Antislop Filter) */
+:root {
+  /* Fonts */
+  --font-display: 'Oswald', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+
+  /* Spacing Scale (8pt grid) */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Border Radius */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+
+  /* Dark Theme Palette (Default) */
+  --color-bg: #101413;
+  --color-surface-lowest: #0b0f0e;
+  --color-surface-low: #181c1b;
+  --color-surface: #1c201f;
+  --color-surface-high: #272b2a;
+  --color-surface-highest: #323635;
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #bec9c3;
+  --color-text-muted: #79857f;
+
+  /* Single Deliberate Accent (Volt Lime) */
+  --color-accent: #c3f400;
+  --color-accent-hover: #d2ff1a;
+  --color-accent-text: #161e00;
+
+  --color-border: #323634;
+  --color-border-high: #484f4b;
+
+  --color-success: #3ddc84;
+  --color-danger: #ff5449;
+  --color-warning: #ffba00;
+}
+
+/* Light Theme Support */
+[data-theme='light'] {
+  --color-bg: #f4f6f5;
+  --color-surface-lowest: #ffffff;
+  --color-surface-low: #edf1ef;
+  --color-surface: #ffffff;
+  --color-surface-high: #e2e8e5;
+  --color-surface-highest: #d5ded9;
+
+  --color-text-primary: #101413;
+  --color-text-secondary: #414b47;
+  --color-text-muted: #6e7974;
+
+  --color-accent: #7fa600;
+  --color-accent-hover: #90bd00;
+  --color-accent-text: #ffffff;
+
+  --color-border: #d5ded9;
+  --color-border-high: #b8c4be;
+}

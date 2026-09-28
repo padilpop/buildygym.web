@@ -1,0 +1,29 @@
+# Local Documentation and Tasks (Rules.md Section 15)
+docs/
+tasks/
+Vibe Engineering Instruction/docs/
+Vibe Engineering Instruction/tasks/
+
+# Environment and Secrets
+.env
+.env.local
+.env.production
+.env.*.local
+*.log
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build and Dist
+frontend/dist/
+backend/storage/*.key
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+
+# OS and Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
