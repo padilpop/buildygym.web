@@ -56,6 +56,16 @@ export default function Testimonials() {
     fetchTestimonials();
   }, [filterPublished]);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && modalOpen && !submitting) {
+        setModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [modalOpen, submitting]);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     fetchTestimonials();

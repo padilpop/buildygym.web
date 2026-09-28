@@ -161,7 +161,8 @@ export default function Membership({ memberships: dynamicMemberships, settings }
                   type="button"
                   onClick={() => setSelectedDuration(d.value)}
                   style={{
-                    padding: '8px 18px',
+                    minHeight: '44px',
+                    padding: '0 18px',
                     borderRadius: 'var(--radius-sm)',
                     fontSize: '0.85rem',
                     fontWeight: 600,
@@ -169,6 +170,9 @@ export default function Membership({ memberships: dynamicMemberships, settings }
                     backgroundColor: active ? 'var(--color-accent)' : 'transparent',
                     color: active ? 'var(--color-accent-text)' : 'var(--color-text-secondary)',
                     cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     transition: 'all var(--transition-fast)',
                   }}
                 >
@@ -183,7 +187,7 @@ export default function Membership({ memberships: dynamicMemberships, settings }
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
             gap: 'var(--space-lg)',
             alignItems: 'stretch',
           }}

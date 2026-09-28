@@ -58,6 +58,16 @@ export default function Facilities() {
     fetchFacilities();
   }, [filterActive, filterFeatured]);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && modalOpen && !submitting) {
+        setModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [modalOpen, submitting]);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     fetchFacilities();

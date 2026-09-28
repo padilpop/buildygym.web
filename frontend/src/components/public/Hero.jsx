@@ -74,13 +74,14 @@ export default function Hero({ settings }) {
             <h1
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(2.5rem, 5vw, 4rem)',
-                lineHeight: 1.05,
+                fontSize: 'clamp(2rem, 5.5vw, 3.8rem)',
+                lineHeight: 1.08,
                 fontWeight: 700,
                 color: 'var(--color-text-primary)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
                 marginBottom: 'var(--space-lg)',
+                overflowWrap: 'break-word',
               }}
             >
               {headline}

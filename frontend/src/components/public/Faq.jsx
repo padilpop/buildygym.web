@@ -117,7 +117,8 @@ export default function Faq({ faqs: dynamicFaqs }) {
                     setOpenIndex(null);
                   }}
                   style={{
-                    padding: '8px 16px',
+                    minHeight: '44px',
+                    padding: '0 18px',
                     borderRadius: 'var(--radius-sm)',
                     border: '1px solid',
                     borderColor: active ? 'var(--color-accent)' : 'var(--color-border)',
@@ -126,6 +127,10 @@ export default function Faq({ faqs: dynamicFaqs }) {
                     fontWeight: 600,
                     fontSize: '0.85rem',
                     cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all var(--transition-fast)',
                   }}
                 >
                   {c === 'all' ? 'Semua Pertanyaan' : c}

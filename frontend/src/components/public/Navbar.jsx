@@ -20,6 +20,17 @@ export default function Navbar() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  // Close mobile menu on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileMenuOpen]);
+
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
@@ -107,6 +118,7 @@ export default function Navbar() {
             gap: 'var(--space-lg)',
           }}
           className="desktop-nav"
+          aria-label="Navigasi Utama"
         >
           {navLinks.map((link) => (
             <a
@@ -118,6 +130,9 @@ export default function Navbar() {
                 fontWeight: 600,
                 color: 'var(--color-text-secondary)',
                 textDecoration: 'none',
+                minHeight: '44px',
+                display: 'inline-flex',
+                alignItems: 'center',
                 transition: 'color var(--transition-fast)',
               }}
               onMouseEnter={(e) => (e.target.style.color = 'var(--color-accent)')}
@@ -134,8 +149,8 @@ export default function Navbar() {
           <button
             onClick={toggleTheme}
             style={{
-              width: '40px',
-              height: '40px',
+              minWidth: '44px',
+              minHeight: '44px',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--color-border)',
               backgroundColor: 'var(--color-surface-low)',
@@ -144,7 +159,7 @@ export default function Navbar() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1rem',
+              fontSize: '1.1rem',
             }}
             aria-label="Ubah tema tampilan"
             title="Ubah tema Dark / Light"
@@ -156,15 +171,17 @@ export default function Navbar() {
           <Link
             to={user ? '/admin' : '/admin/login'}
             style={{
-              padding: '8px 12px',
+              minHeight: '44px',
+              padding: '0 14px',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--color-border)',
               backgroundColor: 'transparent',
               color: 'var(--color-text-muted)',
-              fontSize: '0.8rem',
+              fontSize: '0.85rem',
               fontWeight: 600,
               textDecoration: 'none',
               display: 'none',
+              alignItems: 'center',
             }}
             className="desktop-admin-btn"
             title={user ? 'Buka Dashboard Admin' : 'Login Admin CMS'}
@@ -177,7 +194,8 @@ export default function Navbar() {
             href="#membership"
             onClick={(e) => handleNavClick(e, '#membership')}
             style={{
-              padding: '10px 18px',
+              minHeight: '44px',
+              padding: '0 20px',
               backgroundColor: 'var(--color-accent)',
               color: 'var(--color-accent-text)',
               fontFamily: 'var(--font-display)',
@@ -188,6 +206,7 @@ export default function Navbar() {
               borderRadius: 'var(--radius-sm)',
               textDecoration: 'none',
               display: 'none',
+              alignItems: 'center',
             }}
             className="desktop-cta-btn"
           >
@@ -211,7 +230,8 @@ export default function Navbar() {
               justifyContent: 'center',
             }}
             className="mobile-hamburger-btn"
-            aria-label="Buka menu navigasi"
+            aria-label={mobileMenuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? '✕' : '☰'}
           </button>
@@ -227,7 +247,7 @@ export default function Navbar() {
             padding: 'var(--space-lg) var(--space-md)',
             display: 'flex',
             flexDirection: 'column',
-            gap: 'var(--space-md)',
+            gap: '8px',
           }}
           className="mobile-menu-drawer"
         >
@@ -237,11 +257,14 @@ export default function Navbar() {
               href={link.href}
               onClick={(e) => handleNavClick(e, link.href)}
               style={{
-                fontSize: '1.1rem',
+                fontSize: '1.05rem',
                 fontWeight: 600,
                 color: 'var(--color-text-primary)',
                 textDecoration: 'none',
-                padding: '8px 0',
+                minHeight: '44px',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '0 8px',
                 borderBottom: '1px solid var(--color-border)',
               }}
             >
@@ -254,13 +277,16 @@ export default function Navbar() {
               onClick={(e) => handleNavClick(e, '#membership')}
               style={{
                 flex: 1,
-                textAlign: 'center',
-                padding: '12px',
+                minHeight: '44px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0 16px',
                 backgroundColor: 'var(--color-accent)',
                 color: 'var(--color-accent-text)',
                 fontFamily: 'var(--font-display)',
                 fontWeight: 700,
-                fontSize: '1rem',
+                fontSize: '0.95rem',
                 textTransform: 'uppercase',
                 borderRadius: 'var(--radius-sm)',
                 textDecoration: 'none',
@@ -271,14 +297,17 @@ export default function Navbar() {
             <Link
               to={user ? '/admin' : '/admin/login'}
               style={{
-                padding: '12px 16px',
+                minHeight: '44px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0 16px',
                 border: '1px solid var(--color-border)',
                 borderRadius: 'var(--radius-sm)',
                 color: 'var(--color-text-primary)',
-                fontSize: '0.9rem',
+                fontSize: '0.85rem',
                 fontWeight: 600,
                 textDecoration: 'none',
-                textAlign: 'center',
               }}
             >
               {user ? 'Admin CMS' : 'Login'}

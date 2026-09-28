@@ -28,6 +28,17 @@ export default function Trainers() {
   const [deleteId, setDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && modalOpen && !submitting) {
+        setModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [modalOpen, submitting]);
+
   const fetchTrainers = async () => {
     try {
       setLoading(true);
@@ -110,7 +121,9 @@ export default function Trainers() {
   const handleToggleStatus = async (id) => {
     try {
       await adminApi.toggleTrainerStatus(id);
-      fetchTrainers();
+      setTrainers((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, is_active: !item.is_active } : item))
+      );
     } catch (err) {
       alert('Gagal mengubah status: ' + err.message);
     }
@@ -134,14 +147,20 @@ export default function Trainers() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-md)', marginBottom: 'var(--space-xl)' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', color: 'var(--color-text-primary)' }}>PERSONAL TRAINERS</h1>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
-            Kelola data pelatih kebugaran resmi Buildy Gym, spesialisasi, dan kontak pemesanan sesi latihan.
+          <span style={{ fontSize: '0.85rem', color: 'var(--color-accent)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>
+            MANAJEMEN TIM
+          </span>
+          <h1 style={{ fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', color: 'var(--color-text-primary)', margin: '4px 0 0' }}>
+            PERSONAL TRAINER
+          </h1>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', margin: 0 }}>
+            Kelola profil pelatih resmi, spesialisasi, dan nomor kontak pemesanan sesi latihan.
           </p>
         </div>
         <button
           onClick={openAddModal}
           style={{
+            minHeight: '44px',
             padding: '12px 20px',
             backgroundColor: 'var(--color-accent)',
             color: 'var(--color-accent-text)',
@@ -150,24 +169,31 @@ export default function Trainers() {
             fontWeight: 700,
             borderRadius: 'var(--radius-sm)',
             letterSpacing: '0.5px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
           }}
         >
-          + TAMBAH TRAINER
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          TAMBAH TRAINER
         </button>
       </div>
 
       {/* Table */}
-      <div style={{ overflowX: 'auto', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+      <div className="table-responsive">
+        <table className="table-custom">
           <thead>
-            <tr style={{ backgroundColor: 'var(--color-surface-low)', borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-muted)' }}>
-              <th style={{ padding: '14px 16px' }}>Foto</th>
-              <th style={{ padding: '14px 16px' }}>Nama Pelatih</th>
-              <th style={{ padding: '14px 16px' }}>Spesialisasi</th>
-              <th style={{ padding: '14px 16px' }}>Pengalaman</th>
-              <th style={{ padding: '14px 16px' }}>Kontak WA</th>
-              <th style={{ padding: '14px 16px' }}>Status</th>
-              <th style={{ padding: '14px 16px', textAlign: 'right' }}>Aksi</th>
+            <tr>
+              <th>Foto</th>
+              <th>Nama Pelatih</th>
+              <th>Spesialisasi</th>
+              <th>Pengalaman</th>
+              <th>Kontak WA</th>
+              <th>Status</th>
+              <th style={{ textAlign: 'right' }}>Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -185,45 +211,67 @@ export default function Trainers() {
               </tr>
             ) : (
               trainers.map((item) => (
-                <tr key={item.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  <td style={{ padding: '14px 16px' }}>
+                <tr key={item.id}>
+                  <td>
                     {item.photo_url ? (
-                      <img src={item.photo_url} alt={item.name} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                      <img
+                        src={item.photo_url}
+                        alt={item.name}
+                        style={{ width: '44px', height: '44px', borderRadius: 'var(--radius-sm)', objectFit: 'cover', border: '1px solid var(--color-border)' }}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.style.display = 'none';
+                        }}
+                      />
                     ) : (
-                      <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'var(--color-surface-high)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+                      <div style={{ width: '44px', height: '44px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--color-surface-high)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', color: 'var(--color-accent)', fontWeight: 700 }}>
                         PT
                       </div>
                     )}
                   </td>
-                  <td style={{ padding: '14px 16px', fontWeight: 600, color: 'var(--color-text-primary)' }}>{item.name}</td>
-                  <td style={{ padding: '14px 16px' }}>{item.specialization}</td>
-                  <td style={{ padding: '14px 16px' }}>{item.experience_years} Tahun</td>
-                  <td style={{ padding: '14px 16px' }}>{item.contact_whatsapp || '-'}</td>
-                  <td style={{ padding: '14px 16px' }}>
+                  <td style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{item.name}</td>
+                  <td>{item.specialization}</td>
+                  <td>{item.experience_years} Tahun</td>
+                  <td>{item.contact_whatsapp || '-'}</td>
+                  <td>
                     <button
                       onClick={() => handleToggleStatus(item.id)}
-                      style={{
-                        padding: '4px 10px',
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        borderRadius: 'var(--radius-sm)',
-                        backgroundColor: item.is_active ? 'rgba(61, 220, 132, 0.15)' : 'rgba(255, 84, 73, 0.15)',
-                        color: item.is_active ? 'var(--color-success)' : 'var(--color-danger)',
-                      }}
+                      className={`status-pill ${item.is_active ? 'active' : 'inactive'}`}
+                      style={{ cursor: 'pointer', border: 'none' }}
+                      title="Klik untuk ubah status tampil"
                     >
-                      {item.is_active ? 'Aktif' : 'Nonaktif'}
+                      <span>{item.is_active ? '● Aktif' : '○ Nonaktif'}</span>
                     </button>
                   </td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                  <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                     <button
                       onClick={() => openEditModal(item)}
-                      style={{ padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', color: 'var(--color-text-secondary)', marginRight: '6px' }}
+                      style={{
+                        minHeight: '36px',
+                        padding: '6px 14px',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: 'var(--radius-sm)',
+                        color: 'var(--color-text-secondary)',
+                        marginRight: '6px',
+                        backgroundColor: 'var(--color-surface)',
+                        fontWeight: 600,
+                        fontSize: '0.85rem',
+                      }}
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => setDeleteId(item.id)}
-                      style={{ padding: '6px 12px', backgroundColor: 'rgba(255, 84, 73, 0.15)', border: '1px solid var(--color-danger)', borderRadius: 'var(--radius-sm)', color: '#ff897d' }}
+                      style={{
+                        minHeight: '36px',
+                        padding: '6px 14px',
+                        backgroundColor: 'rgba(255, 84, 73, 0.12)',
+                        border: '1px solid rgba(255, 84, 73, 0.35)',
+                        borderRadius: 'var(--radius-sm)',
+                        color: '#ff897d',
+                        fontWeight: 600,
+                        fontSize: '0.85rem',
+                      }}
                     >
                       Hapus
                     </button>
@@ -237,111 +285,238 @@ export default function Trainers() {
 
       {/* Modal Form */}
       {modalOpen && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0, 0, 0, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 'var(--space-md)' }}>
-          <div style={{ width: '100%', maxWidth: '560px', backgroundColor: 'var(--color-surface-low)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: 'var(--space-xl)', maxHeight: '90vh', overflowY: 'auto' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', marginBottom: 'var(--space-lg)', color: 'var(--color-text-primary)' }}>
-              {editingItem ? 'EDIT DATA PELATIH' : 'TAMBAH PELATIH BARU'}
-            </h2>
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(3px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: 'var(--space-md)',
+          }}
+          onClick={() => !submitting && setModalOpen(false)}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '560px',
+              backgroundColor: 'var(--color-surface-low)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-md)',
+              padding: 'var(--space-xl)',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              boxShadow: '0 12px 32px rgba(0, 0, 0, 0.6)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--color-text-primary)', margin: 0 }}>
+                {editingItem ? 'EDIT DATA PELATIH' : 'TAMBAH PELATIH BARU'}
+              </h2>
+              <button
+                type="button"
+                onClick={() => setModalOpen(false)}
+                style={{ width: '36px', height: '36px', color: 'var(--color-text-muted)', fontSize: '1.4rem' }}
+                aria-label="Tutup Form"
+              >
+                &times;
+              </button>
+            </div>
 
             {formError && (
-              <div style={{ padding: 'var(--space-sm) var(--space-md)', backgroundColor: 'rgba(255, 84, 73, 0.15)', border: '1px solid var(--color-danger)', color: '#ff897d', borderRadius: 'var(--radius-sm)', marginBottom: 'var(--space-md)', fontSize: '0.875rem' }}>
+              <div
+                style={{
+                  padding: 'var(--space-sm) var(--space-md)',
+                  backgroundColor: 'rgba(255, 84, 73, 0.15)',
+                  border: '1px solid var(--color-danger)',
+                  color: '#ff897d',
+                  borderRadius: 'var(--radius-sm)',
+                  marginBottom: 'var(--space-md)',
+                  fontSize: '0.875rem',
+                }}
+              >
                 {formError}
               </div>
             )}
 
             <form onSubmit={handleFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>Nama Lengkap Trainer</label>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '6px', fontWeight: 600 }}>
+                  Nama Lengkap Pelatih <span style={{ color: 'var(--color-accent)' }}>*</span>
+                </label>
                 <input
                   type="text"
                   required
-                  placeholder="Contoh: Coach Budi Prakoso"
+                  placeholder="Contoh: Rian Gunawan"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  style={{ width: '100%', padding: '10px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', borderRadius: 'var(--radius-sm)' }}
+                  style={{
+                    width: '100%',
+                    minHeight: '44px',
+                    padding: '10px 14px',
+                    backgroundColor: 'var(--color-surface)',
+                    border: '1px solid var(--color-border)',
+                    color: 'var(--color-text-primary)',
+                    borderRadius: 'var(--radius-sm)',
+                  }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>URL Foto Profil</label>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '6px', fontWeight: 600 }}>
+                  URL Foto Profil
+                </label>
                 <input
                   type="url"
-                  placeholder="https://... atau upload via media"
+                  placeholder="https://images.unsplash.com/..."
                   value={formData.photo_url}
                   onChange={(e) => setFormData({ ...formData, photo_url: e.target.value })}
-                  style={{ width: '100%', padding: '10px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', borderRadius: 'var(--radius-sm)' }}
+                  style={{
+                    width: '100%',
+                    minHeight: '44px',
+                    padding: '10px 14px',
+                    backgroundColor: 'var(--color-surface)',
+                    border: '1px solid var(--color-border)',
+                    color: 'var(--color-text-primary)',
+                    borderRadius: 'var(--radius-sm)',
+                  }}
                 />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>Spesialisasi</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '6px', fontWeight: 600 }}>
+                    Spesialisasi <span style={{ color: 'var(--color-accent)' }}>*</span>
+                  </label>
                   <input
                     type="text"
                     required
-                    placeholder="Hypertrophy & Strength"
+                    placeholder="Contoh: Hypertrophy & Fat Loss"
                     value={formData.specialization}
                     onChange={(e) => setFormData({ ...formData, specialization: e.target.value })}
-                    style={{ width: '100%', padding: '10px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', borderRadius: 'var(--radius-sm)' }}
+                    style={{
+                      width: '100%',
+                      minHeight: '44px',
+                      padding: '10px 14px',
+                      backgroundColor: 'var(--color-surface)',
+                      border: '1px solid var(--color-border)',
+                      color: 'var(--color-text-primary)',
+                      borderRadius: 'var(--radius-sm)',
+                    }}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>Tahun Pengalaman</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '6px', fontWeight: 600 }}>
+                    Pengalaman (Tahun)
+                  </label>
                   <input
                     type="number"
                     min="0"
+                    placeholder="5"
                     value={formData.experience_years}
                     onChange={(e) => setFormData({ ...formData, experience_years: e.target.value })}
-                    style={{ width: '100%', padding: '10px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', borderRadius: 'var(--radius-sm)' }}
+                    style={{
+                      width: '100%',
+                      minHeight: '44px',
+                      padding: '10px 14px',
+                      backgroundColor: 'var(--color-surface)',
+                      border: '1px solid var(--color-border)',
+                      color: 'var(--color-text-primary)',
+                      borderRadius: 'var(--radius-sm)',
+                    }}
                   />
                 </div>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>No. WhatsApp Konsultasi</label>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '6px', fontWeight: 600 }}>
+                  Nomor WhatsApp Pemesanan (contoh: 6281234567890)
+                </label>
                 <input
                   type="text"
                   placeholder="6281234567890"
                   value={formData.contact_whatsapp}
                   onChange={(e) => setFormData({ ...formData, contact_whatsapp: e.target.value })}
-                  style={{ width: '100%', padding: '10px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', borderRadius: 'var(--radius-sm)' }}
+                  style={{
+                    width: '100%',
+                    minHeight: '44px',
+                    padding: '10px 14px',
+                    backgroundColor: 'var(--color-surface)',
+                    border: '1px solid var(--color-border)',
+                    color: 'var(--color-text-primary)',
+                    borderRadius: 'var(--radius-sm)',
+                  }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>Bio / Pendekatan Latihan</label>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '6px', fontWeight: 600 }}>
+                  Sertifikasi (1 baris per sertifikat)
+                </label>
                 <textarea
                   rows="3"
-                  value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  placeholder="Deskripsi singkat pengalaman membimbing pemula hingga atlet..."
-                  style={{ width: '100%', padding: '10px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', borderRadius: 'var(--radius-sm)' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>Sertifikasi Resmi (1 baris per sertifikasi)</label>
-                <textarea
-                  rows="2"
                   value={formData.certificationsText}
                   onChange={(e) => setFormData({ ...formData, certificationsText: e.target.value })}
-                  placeholder="Certified Personal Trainer (APKI)&#10;Sports Nutritionist Level 1"
-                  style={{ width: '100%', padding: '10px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', borderRadius: 'var(--radius-sm)' }}
+                  placeholder="APKI Certified Personal Trainer&#10;First Aid & CPR Certified"
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    backgroundColor: 'var(--color-surface)',
+                    border: '1px solid var(--color-border)',
+                    color: 'var(--color-text-primary)',
+                    borderRadius: 'var(--radius-sm)',
+                    resize: 'vertical',
+                  }}
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-md)', marginTop: 'var(--space-md)' }}>
+              <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
+                  <input
+                    type="checkbox"
+                    checked={formData.is_active}
+                    onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                    style={{ width: '18px', height: '18px', accentColor: 'var(--color-accent)' }}
+                  />
+                  Status Tampil (Aktif)
+                </label>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-md)', marginTop: 'var(--space-lg)' }}>
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  style={{ padding: '10px 18px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', color: 'var(--color-text-secondary)' }}
+                  style={{
+                    minHeight: '44px',
+                    padding: '0 20px',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-sm)',
+                    color: 'var(--color-text-secondary)',
+                    fontWeight: 600,
+                  }}
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  style={{ padding: '10px 22px', backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)', fontWeight: 700, fontFamily: 'var(--font-display)', borderRadius: 'var(--radius-sm)', textTransform: 'uppercase' }}
+                  style={{
+                    minHeight: '44px',
+                    padding: '0 24px',
+                    backgroundColor: 'var(--color-accent)',
+                    color: 'var(--color-accent-text)',
+                    fontWeight: 700,
+                    fontFamily: 'var(--font-display)',
+                    borderRadius: 'var(--radius-sm)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                  }}
                 >
                   {submitting ? 'MENYIMPAN...' : 'SIMPAN TRAINER'}
                 </button>
@@ -351,10 +526,11 @@ export default function Trainers() {
         </div>
       )}
 
+      {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={Boolean(deleteId)}
         title="Hapus Data Pelatih"
-        message="Apakah Anda yakin ingin menghapus data pelatih ini dari sistem?"
+        message="Apakah Anda yakin ingin menghapus data pelatih ini? Tindakan ini tidak dapat dibatalkan."
         isDeleting={deleting}
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteId(null)}

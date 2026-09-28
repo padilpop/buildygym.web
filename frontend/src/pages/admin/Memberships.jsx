@@ -29,6 +29,17 @@ export default function Memberships() {
   const [deleteId, setDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && modalOpen && !submitting) {
+        setModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [modalOpen, submitting]);
+
   const fetchMemberships = async () => {
     try {
       setLoading(true);
@@ -118,21 +129,23 @@ export default function Memberships() {
   const handleToggleStatus = async (id) => {
     try {
       await adminApi.toggleMembershipStatus(id);
-      fetchMemberships();
+      setMemberships((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, is_active: !item.is_active } : item))
+      );
     } catch (err) {
-      alert('Gagal mengubah status: ' + err.message);
+      alert(err.message || 'Gagal mengubah status');
     }
   };
 
   const handleDeleteConfirm = async () => {
     if (!deleteId) return;
-    setDeleting(true);
     try {
+      setDeleting(true);
       await adminApi.deleteMembership(deleteId);
       setDeleteId(null);
       fetchMemberships();
     } catch (err) {
-      alert('Gagal menghapus: ' + err.message);
+      alert(err.message || 'Gagal menghapus data');
     } finally {
       setDeleting(false);
     }
@@ -140,17 +153,23 @@ export default function Memberships() {
 
   return (
     <div>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-md)', marginBottom: 'var(--space-xl)' }}>
+      {/* Header Action */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-xl)', flexWrap: 'wrap', gap: 'var(--space-md)' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', color: 'var(--color-text-primary)' }}>MANAJEMEN MEMBERSHIP</h1>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
-            Kelola paket keanggotaan gym, durasi, harga, benefit, dan status tampil di landing page.
+          <span style={{ fontSize: '0.85rem', color: 'var(--color-accent)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>
+            MANAJEMEN PAKET
+          </span>
+          <h1 style={{ fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', color: 'var(--color-text-primary)', margin: '4px 0 0' }}>
+            PAKET MEMBERSHIP GYM
+          </h1>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', margin: 0 }}>
+            Kelola harga, durasi, dan daftar fasilitas yang didapatkan member.
           </p>
         </div>
         <button
           onClick={openAddModal}
           style={{
+            minHeight: '44px',
             padding: '12px 20px',
             backgroundColor: 'var(--color-accent)',
             color: 'var(--color-accent-text)',
@@ -159,9 +178,16 @@ export default function Memberships() {
             fontWeight: 700,
             borderRadius: 'var(--radius-sm)',
             letterSpacing: '0.5px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
           }}
         >
-          + TAMBAH PAKET
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          TAMBAH PAKET
         </button>
       </div>
 
@@ -175,6 +201,7 @@ export default function Memberships() {
             onChange={(e) => setSearch(e.target.value)}
             style={{
               flex: 1,
+              minHeight: '44px',
               padding: '10px 14px',
               backgroundColor: 'var(--color-surface-low)',
               border: '1px solid var(--color-border)',
@@ -185,10 +212,13 @@ export default function Memberships() {
           <button
             type="submit"
             style={{
-              padding: '10px 16px',
-              border: '1px solid var(--color-border)',
+              minHeight: '44px',
+              padding: '0 20px',
+              backgroundColor: 'var(--color-surface)',
+              border: '1px solid var(--color-border-high)',
               borderRadius: 'var(--radius-sm)',
               color: 'var(--color-text-primary)',
+              fontWeight: 600,
             }}
           >
             Cari
@@ -199,7 +229,8 @@ export default function Memberships() {
           value={filterActive}
           onChange={(e) => setFilterActive(e.target.value)}
           style={{
-            padding: '10px 14px',
+            minHeight: '44px',
+            padding: '10px 16px',
             backgroundColor: 'var(--color-surface-low)',
             border: '1px solid var(--color-border)',
             borderRadius: 'var(--radius-sm)',
@@ -213,18 +244,18 @@ export default function Memberships() {
       </div>
 
       {/* Table */}
-      <div style={{ overflowX: 'auto', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+      <div className="table-responsive">
+        <table className="table-custom">
           <thead>
-            <tr style={{ backgroundColor: 'var(--color-surface-low)', borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-muted)' }}>
-              <th style={{ padding: '14px 16px' }}>Urutan</th>
-              <th style={{ padding: '14px 16px' }}>Nama Paket</th>
-              <th style={{ padding: '14px 16px' }}>Durasi</th>
-              <th style={{ padding: '14px 16px' }}>Harga</th>
-              <th style={{ padding: '14px 16px' }}>Benefit</th>
-              <th style={{ padding: '14px 16px' }}>Highlight</th>
-              <th style={{ padding: '14px 16px' }}>Status</th>
-              <th style={{ padding: '14px 16px', textAlign: 'right' }}>Aksi</th>
+            <tr>
+              <th>Urutan</th>
+              <th>Nama Paket</th>
+              <th>Durasi</th>
+              <th>Harga</th>
+              <th>Benefit</th>
+              <th>Highlight</th>
+              <th>Status</th>
+              <th style={{ textAlign: 'right' }}>Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -242,48 +273,62 @@ export default function Memberships() {
               </tr>
             ) : (
               memberships.map((item) => (
-                <tr key={item.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                  <td style={{ padding: '14px 16px', color: 'var(--color-text-muted)' }}>{item.display_order}</td>
-                  <td style={{ padding: '14px 16px', fontWeight: 600, color: 'var(--color-text-primary)' }}>{item.name}</td>
-                  <td style={{ padding: '14px 16px' }}>{item.duration_label}</td>
-                  <td style={{ padding: '14px 16px', color: 'var(--color-accent)', fontWeight: 600 }}>
+                <tr key={item.id}>
+                  <td style={{ color: 'var(--color-text-muted)', fontWeight: 600 }}>#{item.display_order}</td>
+                  <td style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{item.name}</td>
+                  <td>{item.duration_label}</td>
+                  <td style={{ color: 'var(--color-accent)', fontWeight: 700 }}>
                     Rp {Number(item.price).toLocaleString('id-ID')}
                   </td>
-                  <td style={{ padding: '14px 16px' }}>{Array.isArray(item.benefits) ? `${item.benefits.length} Benefit` : '-'}</td>
-                  <td style={{ padding: '14px 16px' }}>
+                  <td>{Array.isArray(item.benefits) ? `${item.benefits.length} Benefit` : '-'}</td>
+                  <td>
                     {item.is_popular ? (
-                      <span style={{ fontSize: '0.75rem', padding: '2px 8px', backgroundColor: 'rgba(195, 244, 0, 0.2)', color: 'var(--color-accent)', borderRadius: 'var(--radius-sm)', fontWeight: 700 }}>
-                        POPULER
+                      <span className="status-pill featured">
+                        ★ POPULER
                       </span>
                     ) : (
-                      '-'
+                      <span style={{ color: 'var(--color-text-muted)' }}>-</span>
                     )}
                   </td>
-                  <td style={{ padding: '14px 16px' }}>
+                  <td>
                     <button
                       onClick={() => handleToggleStatus(item.id)}
-                      style={{
-                        padding: '4px 10px',
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        borderRadius: 'var(--radius-sm)',
-                        backgroundColor: item.is_active ? 'rgba(61, 220, 132, 0.15)' : 'rgba(255, 84, 73, 0.15)',
-                        color: item.is_active ? 'var(--color-success)' : 'var(--color-danger)',
-                      }}
+                      className={`status-pill ${item.is_active ? 'active' : 'inactive'}`}
+                      style={{ cursor: 'pointer', border: 'none' }}
+                      title="Klik untuk ubah status tampil"
                     >
-                      {item.is_active ? 'Aktif' : 'Nonaktif'}
+                      <span>{item.is_active ? '● Aktif' : '○ Nonaktif'}</span>
                     </button>
                   </td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                  <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                     <button
                       onClick={() => openEditModal(item)}
-                      style={{ padding: '6px 12px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', color: 'var(--color-text-secondary)', marginRight: '6px' }}
+                      style={{
+                        minHeight: '36px',
+                        padding: '6px 14px',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: 'var(--radius-sm)',
+                        color: 'var(--color-text-secondary)',
+                        marginRight: '6px',
+                        backgroundColor: 'var(--color-surface)',
+                        fontWeight: 600,
+                        fontSize: '0.85rem',
+                      }}
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => setDeleteId(item.id)}
-                      style={{ padding: '6px 12px', backgroundColor: 'rgba(255, 84, 73, 0.15)', border: '1px solid var(--color-danger)', borderRadius: 'var(--radius-sm)', color: '#ff897d' }}
+                      style={{
+                        minHeight: '36px',
+                        padding: '6px 14px',
+                        backgroundColor: 'rgba(255, 84, 73, 0.12)',
+                        border: '1px solid rgba(255, 84, 73, 0.35)',
+                        borderRadius: 'var(--radius-sm)',
+                        color: '#ff897d',
+                        fontWeight: 600,
+                        fontSize: '0.85rem',
+                      }}
                     >
                       Hapus
                     </button>
@@ -297,34 +342,94 @@ export default function Memberships() {
 
       {/* Form Modal */}
       {modalOpen && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0, 0, 0, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 'var(--space-md)' }}>
-          <div style={{ width: '100%', maxWidth: '560px', backgroundColor: 'var(--color-surface-low)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: 'var(--space-xl)', maxHeight: '90vh', overflowY: 'auto' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', marginBottom: 'var(--space-lg)', color: 'var(--color-text-primary)' }}>
-              {editingItem ? 'EDIT PAKET MEMBERSHIP' : 'TAMBAH PAKET MEMBERSHIP'}
-            </h2>
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(3px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: 'var(--space-md)',
+          }}
+          onClick={() => !submitting && setModalOpen(false)}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '560px',
+              backgroundColor: 'var(--color-surface-low)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-md)',
+              padding: 'var(--space-xl)',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              boxShadow: '0 12px 32px rgba(0, 0, 0, 0.6)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: 'var(--color-text-primary)', margin: 0 }}>
+                {editingItem ? 'EDIT PAKET MEMBERSHIP' : 'TAMBAH PAKET MEMBERSHIP'}
+              </h2>
+              <button
+                type="button"
+                onClick={() => setModalOpen(false)}
+                style={{ width: '36px', height: '36px', color: 'var(--color-text-muted)', fontSize: '1.4rem' }}
+                aria-label="Tutup Form"
+              >
+                &times;
+              </button>
+            </div>
 
             {formError && (
-              <div style={{ padding: 'var(--space-sm) var(--space-md)', backgroundColor: 'rgba(255, 84, 73, 0.15)', border: '1px solid var(--color-danger)', color: '#ff897d', borderRadius: 'var(--radius-sm)', marginBottom: 'var(--space-md)', fontSize: '0.875rem' }}>
+              <div
+                style={{
+                  padding: 'var(--space-sm) var(--space-md)',
+                  backgroundColor: 'rgba(255, 84, 73, 0.15)',
+                  border: '1px solid var(--color-danger)',
+                  color: '#ff897d',
+                  borderRadius: 'var(--radius-sm)',
+                  marginBottom: 'var(--space-md)',
+                  fontSize: '0.875rem',
+                }}
+              >
                 {formError}
               </div>
             )}
 
             <form onSubmit={handleFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>Nama Paket</label>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '6px', fontWeight: 600 }}>
+                  Nama Paket <span style={{ color: 'var(--color-accent)' }}>*</span>
+                </label>
                 <input
                   type="text"
                   required
                   placeholder="Contoh: 1 Month All Access"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  style={{ width: '100%', padding: '10px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', borderRadius: 'var(--radius-sm)' }}
+                  style={{
+                    width: '100%',
+                    minHeight: '44px',
+                    padding: '10px 14px',
+                    backgroundColor: 'var(--color-surface)',
+                    border: '1px solid var(--color-border)',
+                    color: 'var(--color-text-primary)',
+                    borderRadius: 'var(--radius-sm)',
+                  }}
                 />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>Harga (Rp)</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '6px', fontWeight: 600 }}>
+                    Harga (Rp) <span style={{ color: 'var(--color-accent)' }}>*</span>
+                  </label>
                   <input
                     type="number"
                     min="0"
@@ -333,47 +438,77 @@ export default function Memberships() {
                     placeholder="150000"
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    style={{ width: '100%', padding: '10px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', borderRadius: 'var(--radius-sm)' }}
+                    style={{
+                      width: '100%',
+                      minHeight: '44px',
+                      padding: '10px 14px',
+                      backgroundColor: 'var(--color-surface)',
+                      border: '1px solid var(--color-border)',
+                      color: 'var(--color-text-primary)',
+                      borderRadius: 'var(--radius-sm)',
+                    }}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>Label Durasi</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '6px', fontWeight: 600 }}>
+                    Label Durasi <span style={{ color: 'var(--color-accent)' }}>*</span>
+                  </label>
                   <input
                     type="text"
                     required
                     placeholder="1 Bulan / 3 Bulan"
                     value={formData.duration_label}
                     onChange={(e) => setFormData({ ...formData, duration_label: e.target.value })}
-                    style={{ width: '100%', padding: '10px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', borderRadius: 'var(--radius-sm)' }}
+                    style={{
+                      width: '100%',
+                      minHeight: '44px',
+                      padding: '10px 14px',
+                      backgroundColor: 'var(--color-surface)',
+                      border: '1px solid var(--color-border)',
+                      color: 'var(--color-text-primary)',
+                      borderRadius: 'var(--radius-sm)',
+                    }}
                   />
                 </div>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '4px' }}>Daftar Benefit (1 baris per benefit)</label>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '6px', fontWeight: 600 }}>
+                  Daftar Benefit (1 baris per benefit)
+                </label>
                 <textarea
                   rows="4"
                   value={formData.benefitsText}
                   onChange={(e) => setFormData({ ...formData, benefitsText: e.target.value })}
                   placeholder="Akses seluruh alat gym&#10;Loker harian gratis&#10;Shower air hangat"
-                  style={{ width: '100%', padding: '10px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', borderRadius: 'var(--radius-sm)' }}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    backgroundColor: 'var(--color-surface)',
+                    border: '1px solid var(--color-border)',
+                    color: 'var(--color-text-primary)',
+                    borderRadius: 'var(--radius-sm)',
+                    resize: 'vertical',
+                  }}
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: 'var(--space-lg)' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>
+              <div style={{ display: 'flex', gap: 'var(--space-xl)', flexWrap: 'wrap' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
                   <input
                     type="checkbox"
                     checked={formData.is_popular}
                     onChange={(e) => setFormData({ ...formData, is_popular: e.target.checked })}
+                    style={{ width: '18px', height: '18px', accentColor: 'var(--color-accent)' }}
                   />
                   Tandai Sebagai "Paling Populer"
                 </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
                   <input
                     type="checkbox"
                     checked={formData.is_active}
                     onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                    style={{ width: '18px', height: '18px', accentColor: 'var(--color-accent)' }}
                   />
                   Status Tampil (Aktif)
                 </label>
@@ -383,14 +518,31 @@ export default function Memberships() {
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  style={{ padding: '10px 18px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', color: 'var(--color-text-secondary)' }}
+                  style={{
+                    minHeight: '44px',
+                    padding: '0 20px',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-sm)',
+                    color: 'var(--color-text-secondary)',
+                    fontWeight: 600,
+                  }}
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  style={{ padding: '10px 22px', backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)', fontWeight: 700, fontFamily: 'var(--font-display)', borderRadius: 'var(--radius-sm)', textTransform: 'uppercase' }}
+                  style={{
+                    minHeight: '44px',
+                    padding: '0 24px',
+                    backgroundColor: 'var(--color-accent)',
+                    color: 'var(--color-accent-text)',
+                    fontWeight: 700,
+                    fontFamily: 'var(--font-display)',
+                    borderRadius: 'var(--radius-sm)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                  }}
                 >
                   {submitting ? 'MENYIMPAN...' : 'SIMPAN PAKET'}
                 </button>
@@ -404,7 +556,7 @@ export default function Memberships() {
       <ConfirmModal
         isOpen={Boolean(deleteId)}
         title="Hapus Paket Membership"
-        message="Apakah Anda yakin ingin menghapus paket membership ini? Paket yang terhapus tidak akan lagi muncul pada landing page."
+        message="Apakah Anda yakin ingin menghapus paket membership ini? Paket yang terhapus tidak akan lagi muncul pada landing page publik."
         isDeleting={deleting}
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteId(null)}

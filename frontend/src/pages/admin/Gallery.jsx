@@ -54,6 +54,16 @@ export default function Gallery() {
     fetchGallery();
   }, [filterCategory, filterActive]);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && modalOpen && !submitting) {
+        setModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [modalOpen, submitting]);
+
   const openAddModal = () => {
     setEditingItem(null);
     setFormData({
