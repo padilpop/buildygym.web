@@ -112,7 +112,8 @@ export default function Gallery({ gallery: dynamicGallery }) {
                   type="button"
                   onClick={() => setSelectedCategory(c)}
                   style={{
-                    padding: '8px 16px',
+                    minHeight: '44px',
+                    padding: '0 16px',
                     borderRadius: 'var(--radius-sm)',
                     border: '1px solid',
                     borderColor: active ? 'var(--color-accent)' : 'var(--color-border)',
@@ -121,6 +122,10 @@ export default function Gallery({ gallery: dynamicGallery }) {
                     fontWeight: 600,
                     fontSize: '0.85rem',
                     cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all var(--transition-fast)',
                   }}
                 >
                   {c === 'all' ? 'Semua Foto' : c}
@@ -134,7 +139,7 @@ export default function Gallery({ gallery: dynamicGallery }) {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
             gap: 'var(--space-md)',
           }}
         >
@@ -155,6 +160,8 @@ export default function Gallery({ gallery: dynamicGallery }) {
               <img
                 src={item.image_url}
                 alt={item.title || 'Foto Gym'}
+                loading="lazy"
+                decoding="async"
                 style={{
                   width: '100%',
                   height: '100%',

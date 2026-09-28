@@ -83,7 +83,7 @@ export default function Testimonials({ testimonials: dynamicTestimonials }) {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
             gap: 'var(--space-lg)',
           }}
         >
@@ -142,6 +142,8 @@ export default function Testimonials({ testimonials: dynamicTestimonials }) {
                   <img
                     src={t.avatar_url}
                     alt={t.member_name}
+                    loading="lazy"
+                    decoding="async"
                     style={{
                       width: '44px',
                       height: '44px',

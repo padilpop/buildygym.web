@@ -153,6 +153,8 @@ export default function Branches({ branches: dynamicBranches, settings }) {
               <img
                 src={activeBranch.image_url || 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=800'}
                 alt={activeBranch.name}
+                loading="lazy"
+                decoding="async"
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 onError={(e) => {
                   e.target.src = 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=800';
@@ -253,7 +255,8 @@ export default function Branches({ branches: dynamicBranches, settings }) {
                     rel="noopener noreferrer"
                     style={{
                       flex: 1,
-                      padding: '12px 18px',
+                      minHeight: '44px',
+                      padding: '0 18px',
                       backgroundColor: 'transparent',
                       border: '1px solid var(--color-border-high)',
                       borderRadius: 'var(--radius-sm)',
@@ -265,6 +268,9 @@ export default function Branches({ branches: dynamicBranches, settings }) {
                       textTransform: 'uppercase',
                       textAlign: 'center',
                       textDecoration: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                   >
                     Buka di Google Maps ↗
@@ -276,7 +282,8 @@ export default function Branches({ branches: dynamicBranches, settings }) {
                   rel="noopener noreferrer"
                   style={{
                     flex: 1,
-                    padding: '12px 18px',
+                    minHeight: '44px',
+                    padding: '0 18px',
                     backgroundColor: 'var(--color-accent)',
                     color: 'var(--color-accent-text)',
                     borderRadius: 'var(--radius-sm)',
@@ -287,6 +294,9 @@ export default function Branches({ branches: dynamicBranches, settings }) {
                     textTransform: 'uppercase',
                     textAlign: 'center',
                     textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
                 >
                   Hubungi Cabang (WA)

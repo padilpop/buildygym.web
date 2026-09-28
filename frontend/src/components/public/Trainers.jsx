@@ -90,7 +90,7 @@ export default function Trainers({ trainers: dynamicTrainers, settings }) {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
             gap: 'var(--space-lg)',
           }}
         >
@@ -116,6 +116,8 @@ export default function Trainers({ trainers: dynamicTrainers, settings }) {
                   <img
                     src={t.photo_url || 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?q=80&w=800'}
                     alt={t.name}
+                    loading="lazy"
+                    decoding="async"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     onError={(e) => {
                       e.target.src = 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?q=80&w=800';
@@ -200,7 +202,8 @@ export default function Trainers({ trainers: dynamicTrainers, settings }) {
                   rel="noopener noreferrer"
                   style={{
                     width: '100%',
-                    padding: '12px',
+                    minHeight: '44px',
+                    padding: '0 16px',
                     backgroundColor: 'var(--color-surface-mid)',
                     border: '1px solid var(--color-border-high)',
                     borderRadius: 'var(--radius-sm)',
@@ -211,7 +214,9 @@ export default function Trainers({ trainers: dynamicTrainers, settings }) {
                     color: 'var(--color-text-primary)',
                     textAlign: 'center',
                     textDecoration: 'none',
-                    display: 'block',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     transition: 'all var(--transition-fast)',
                   }}
                   onMouseEnter={(e) => {

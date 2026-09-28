@@ -152,7 +152,7 @@ export default function Facilities({ facilities: dynamicFacilities }) {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
             gap: 'var(--space-lg)',
           }}
         >
@@ -176,6 +176,8 @@ export default function Facilities({ facilities: dynamicFacilities }) {
                 <img
                   src={item.image_url || 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800'}
                   alt={item.name}
+                  loading="lazy"
+                  decoding="async"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   onError={(e) => {
                     e.target.src = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800';
