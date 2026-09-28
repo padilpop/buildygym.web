@@ -30,6 +30,31 @@ Route::get('/health', function () {
     ]);
 });
 
+// One-time Setup Database Route (Protected by secret token)
+Route::get('/setup-database', function (\Illuminate\Http\Request $request) {
+    if ($request->query('secret') !== 'buildygym2026') {
+        return response()->json(['error' => 'Unauthorized'], 403);
+    }
+
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'AdminSeeder', '--force' => true]);
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'WebsiteSettingSeeder', '--force' => true]);
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'InitialGymDataSeeder', '--force' => true]);
+
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'Database migration and seeding completed successfully on Supabase!',
+            'artisan_output' => \Illuminate\Support\Facades\Artisan::output(),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+        ], 500);
+    }
+});
+
 // Public Landing Page API Routes (Dynamic CMS Data)
 Route::prefix('public')->middleware('throttle:public-api')->group(function () {
     Route::get('/landing-data', [PublicController::class, 'landingData']);
