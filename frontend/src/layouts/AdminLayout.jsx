@@ -161,7 +161,6 @@ export default function AdminLayout() {
           position: 'fixed',
           top: 0,
           bottom: 0,
-          left: sidebarOpen ? 0 : '-270px',
           zIndex: 50,
           transition: 'left var(--transition-normal)',
           overflowY: 'auto',
@@ -399,6 +398,9 @@ export default function AdminLayout() {
       </div>
 
       <style>{`
+        .admin-sidebar {
+          left: 0;
+        }
         @media (max-width: 900px) {
           .admin-sidebar {
             left: -270px !important;
